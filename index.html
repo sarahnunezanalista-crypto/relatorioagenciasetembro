@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Relatório Gerado - Agência Senado</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --primary: #264653; --success: #2A9D8F; --warning: #E9C46A; --orange: #F4A261; --danger: #E76F51; 
+            --dark: #202124; --bg: #f4f6f9; --gray: #5f6368; --card-bg: #ffffff; --purple: #9c27b0;
+            --comp-blue: #264653; --comp-red: #E76F51; --comp-green: #2A9D8F;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background-color: var(--bg); color: var(--dark); min-height: 100vh; padding-bottom: 2rem; overflow-x: hidden; width: 100%; }
+        
+        .cover-page {
+            height: 40vh;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .cover-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(38, 70, 83, 0.75); 
+            z-index: 1;
+        }
+        .cover-content {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+        .cover-logo {
+            max-width: 240px; 
+            margin-bottom: 1rem;
+            background-color: rgba(255, 255, 255, 0.95); 
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .cover-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+            line-height: 1.2;
+            margin-top: 0;
+        }
+        .cover-subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            margin-top: 0.5rem;
+            color: #e8eaed;
+        }
+
+        .sticky-header {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 70px;
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+        }
+        .sticky-header.visible {
+            transform: translateY(0);
+        }
+        .sticky-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .sticky-logo {
+            max-height: 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        .sticky-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        @media(max-width: 768px) {
+            .cover-title { font-size: 1.5rem; }
+            .cover-subtitle { font-size: 0.9rem; }
+            .cover-logo { max-width: 180px; }
+            .sticky-content { padding: 0 0.5rem; gap: 10px; }
+            .sticky-logo { max-height: 45px; padding: 4px 6px; }
+            .sticky-title { font-size: 0.85rem; line-height: 1.2; text-align: right; }
+        }
+
+        .container { width: 100%; max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+        .card { background: var(--card-bg); border-radius: 8px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05); min-width: 0; }
+        
+        @media(min-width: 768px) {
+            .container { margin: 2rem auto; padding: 0 1.5rem; }
+            .card { padding: 1.5rem; }
+        }
+        
+        .destaques-box { background-color: #e8f0fe; border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 0 8px 8px 0; margin-bottom: 2rem; white-space: pre-wrap; line-height: 1.6; font-size: 1.1rem; }
+        
+        .kpi-grid-5 { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
+        @media(min-width: 500px) { .kpi-grid-5 { grid-template-columns: repeat(2, 1fr); } }
+        @media(min-width: 768px) { .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width: 1024px) { .kpi-grid-5 { grid-template-columns: repeat(5, 1fr); } }
+
+        .kpi-grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        @media(min-width: 600px) { .kpi-grid-2 { grid-template-columns: repeat(2, 1fr); } }
+        
+        .kpi-card-small { background: white; padding: 1.5rem 1rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: center; border-left: 4px solid var(--primary); }
+        .kpi-card-small h4 { color: var(--gray); font-size: 0.85rem; margin-bottom: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; line-height: 1.2; height: 40px; }
+        .kpi-card-small h4 i { font-size: 1.6rem; }
+        .kpi-card-small .valor { font-size: 2rem; font-weight: bold; color: var(--dark); }
+        
+        .charts-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media(min-width: 900px) { .charts-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .chart-wrapper { position: relative; height: 260px; width: 100%; }
+        @media(min-width: 768px) { .chart-wrapper { height: 320px; } }
+
+        .comp-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media(min-width: 900px) { .comp-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .comp-legend { text-align: center; font-size: 0.85rem; color: var(--gray); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .dashed-line { width: 24px; border-top: 2px dashed #9aa0a6; display: inline-block; }
+
+        .variations-wrapper { display: flex; gap: 10px; margin-top: 1.5rem; }
+        .var-badge { flex: 1; text-align: center; padding: 0.8rem 0.5rem; border-radius: 6px; background: #f8f9fa; border: 1px solid #e8eaed; }
+        .var-badge.pos .var-value { color: var(--success); }
+        .var-badge.neg .var-value { color: var(--danger); }
+        .var-value { display: block; font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; }
+        .var-label { font-size: 0.75rem; color: var(--gray); line-height: 1.2; display: block; }
+
+        .social-section-title { text-align: center; color: var(--primary); margin: 3rem 0 1.5rem; font-size: 1.5rem; }
+        .social-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media(min-width: 768px) { .social-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .social-card { background: white; padding: 1.5rem; border-radius: 8px; border-top: 4px solid; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .social-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; color: var(--dark); }
+        .social-metrics { display: flex; flex-direction: column; gap: 0.8rem; }
+        .metric { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f3f4; padding-bottom: 0.4rem; font-size: 1rem; }
+        .metric span { color: var(--gray); }
+        .metric strong { color: var(--dark); font-weight: bold; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 0; font-size: 0.95rem; }
+        .data-table th { background-color: #d8e8e6; color: var(--dark); padding: 12px 15px; text-align: left; font-weight: 600; border-bottom: 2px solid #2a9d8f;}
+        .data-table th.text-right { text-align: right; }
+        .data-table td { padding: 10px 15px; border-bottom: 1px solid #eee; color: var(--dark); }
+        .data-table td.text-right { text-align: right; }
+        .data-table tr:nth-child(even) { background-color: #f2f7f6; }
+        
+        .credits-section {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 2rem;
+            margin-top: 4rem;
+            page-break-inside: avoid;
+        }
+        .credits-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(15, 35, 45, 1) 0%, rgba(15, 35, 45, 0.85) 45%, rgba(15, 35, 45, 0.2) 100%);
+            z-index: 1;
+        }
+        .credits-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .credits-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+        .credits-line {
+            width: 320px;
+            height: 2px;
+            background-color: #40B5A6; 
+            margin-bottom: 1.5rem;
+        }
+        .credits-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 500px;
+            font-weight: 500;
+        }
+        .credits-fontes {
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-size: 0.85rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .cover-page {
+                height: 45vh; 
+                margin-bottom: 2rem;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .credits-section {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .sticky-header { display: none !important; }
+            .container { page-break-before: auto; } 
+            .card, .kpi-card-small, .social-card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+            .chart-wrapper { height: 200px !important; } 
+            .social-section-title { margin-top: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cover-page" style="background-image: url('https://farm66.staticflickr.com/65535/55128488962_ab681ef21d_z.jpg');">
+        <div class="cover-overlay"></div>
+        <div class="cover-content">
+            <img src="https://live.staticflickr.com/65535/55263689148_8cc5854e3a_m.jpg" class="cover-logo" alt="Agência Senado" onerror="this.src='https://www12.senado.leg.br/noticias/++theme++senadonoticias/images/logo-agencia-senado.png';">
+            <h1 class="cover-title">Relatório mensal - Setembro</h1>
+            <h2 class="cover-subtitle">Ano 6 - Edição 50</h2>
+        </div>
+    </div>
+
+    <div id="sticky-header" class="sticky-header no-print" style="background-image: url('https://farm66.staticflickr.com/65535/55128488962_ab681ef21d_z.jpg');">
+        <div class="cover-overlay"></div>
+        <div class="sticky-content">
+            <img src="https://live.staticflickr.com/65535/55263689148_8cc5854e3a_m.jpg" class="sticky-logo" alt="Agência Senado" onerror="this.src='https://www12.senado.leg.br/noticias/++theme++senadonoticias/images/logo-agencia-senado.png';">
+            <h2 class="sticky-title">Relatório mensal - Setembro</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="destaques-box">
+            <h3 style="color: var(--primary); margin-bottom: 10px;">Destaques do Mês</h3>
+            <div>Em setembro, a Agência Senado obteve 5,1 milhões de visualizações, com 3,4 milhões de usuários, um dos recordes mensais do portal Senado Notícias. O alcance se deve às matérias de serviço sobre eleições, especialmente às listas de candidatos ao Senado e às instruções sobre o processo de votação. <br><br>No período que antecedeu o primeiro turno das eleições, o acesso ao portal chegou em média a meio milhão por dia. Em setembro, foram 100 milhões de ofertas do nosso conteúdo no Google e 90% dos nossos usuários vieram do buscador. <br><br>Os indicadores de visualizações e usuários subiram entre 150% e 185% nas comparações com setembro de 2025 e com a média dos 12 meses anteriores.  <br><br>O alcance do portal Senado Notícias nestas eleições superou o da eleição de 2022. Somente a matéria dos candidatos ao Senado por São Paulo em 2026 teve 1,9 milhão de acessos, quase 60% a mais que em 2022. Naquelas eleições, o conteúdo de mesma natureza teve 1,2 milhão de visualizações. <br><br>Na plataforma Instagram, outro recorde em setembro: 2,5 milhões de visualizações, impulsionadas pelas colaborações com os perfis @senadofederal, @tvsenado e @radiosenado. A métrica foi obtida pela soma das visualizações de todos os posts da Agência no mês. Já o número informado pelo Instagram foi de 1,96 milhão.  <br><br>Cerca de 2,2 milhões de visualizações vieram das mais de 30 postagens colaborativas sobre os candidatos ao Senado em cada estado. O post exclusivo mais visto foi o da aprovação do piso salarial de médicos e dentistas na CAS. Foram 84 mil visualizações, 52 mil contas alcançadas, 3,3 mil curtidas, 231 comentários e 1,2 mil compartilhamentos. <br><br>No Flickr, as fotografias da Agência foram visualizadas 920 mil vezes em setembro. O pico ocorreu no dia 1º, quando houve esforço concentrado e muito movimento no Senado: aprovação de benefícios para motoristas de app e taxistas, debates sobre o fim da escala 6 x 1, e pedido de impeachment do ministro Alexandre de Moraes. <br><br></div>
+        </div>
+
+        <h3 class="social-section-title" style="margin-top: 0;">Publicações feitas no Portal Senado Notícias</h3>
+        <div class="kpi-grid-5">
+            <div class="kpi-card-small" style="border-left-color: #264653;">
+                <h4><i class="fas fa-newspaper" style="color: #264653;"></i>Matérias em texto e foto</h4>
+                <div class="valor">232</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #2A9D8F;">
+                <h4><i class="fas fa-headphones" style="color: #2A9D8F;"></i>Matérias em áudio</h4>
+                <div class="valor">149</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #E9C46A;">
+                <h4><i class="fas fa-video" style="color: #E9C46A;"></i>Matérias em vídeo</h4>
+                <div class="valor">71</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #F4A261;">
+                <h4><i class="fas fa-mobile-alt" style="color: #F4A261;"></i>Infomatérias e web Stories</h4>
+                <div class="valor">44</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #E76F51;">
+                <h4><i class="fas fa-comment-dots" style="color: #E76F51;"></i>Posts em microblog</h4>
+                <div class="valor">0</div>
+            </div>
+        </div>
+
+        <h3 class="social-section-title" style="margin-top:0">Mais produtos e serviços</h3>
+        <div class="kpi-grid-5">
+            <div class="kpi-card-small" style="border-left-color: #264653;">
+                <h4><i class="fas fa-camera" style="color: #264653;"></i>Fotografias produzidas</h4>
+                <div class="valor"> 25.521</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #2a9d8f;">
+                <h4><i class="fas fa-images" style="color: #2a9d8f;"></i>Fotografias catalogadas</h4>
+                <div class="valor">4.279</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #e9c46a;">
+                <h4><i class="fa-brands fa-flickr" style="color: #e9c46a;"></i>Publicadas no Flickr</h4>
+                <div class="valor">2.043</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #f4a261;">
+                <h4><i class="fa-brands fa-instagram" style="color: #f4a261;"></i>Postagens no Instagram</h4>
+                <div class="valor">320</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: #e76f51;">
+                <h4><i class="fa-brands fa-youtube" style="color: #e76f51;"></i>Publicações no YouTube</h4>
+                <div class="valor">17</div>
+            </div>
+        </div>
+
+        <h3 class="social-section-title" style="margin-top:3rem;">Acessos ao Portal de Notícias</h3>
+        <div class="kpi-grid-2">
+            <div class="kpi-card-small" style="border-left-color: var(--success);">
+                <h4><i class="fas fa-eye" style="color: var(--success);"></i>Visualizações</h4>
+                <div class="valor">5.188.350</div>
+            </div>
+            <div class="kpi-card-small" style="border-left-color: var(--danger);">
+                <h4><i class="fas fa-users" style="color: var(--danger);"></i>Número de usuários</h4>
+                <div class="valor">3.380.822</div>
+            </div>
+        </div>
+
+        <div class="charts-grid" style="margin-bottom: 2rem;">
+            <div class="card"><h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;">Origem dos Usuários</h3><div class="chart-wrapper"><canvas id="graficoOrigem"></canvas></div></div>
+            <div class="card"><h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;">Usuários por Dispositivo</h3><div class="chart-wrapper"><canvas id="graficoDispositivos"></canvas></div></div>
+        </div>
+
+        <h3 class="social-section-title">Desempenho nas Redes Sociais</h3>
+        <div class="social-grid">
+            <div class="social-card" style="border-top-color: #E1306C;">
+                <div class="social-header"><i class="fa-brands fa-instagram" style="color: #E1306C;"></i> Instagram</div>
+                <div class="social-metrics">
+                    <div class="metric"><span>Visualizações</span><strong>1.959.709</strong></div>
+                    <div class="metric"><span>Seguidores</span><strong>58.658</strong></div>
+                </div>
+            </div>
+            
+            <div class="social-card" style="border-top-color: #ff0084;">
+                <div class="social-header"><i class="fa-brands fa-flickr" style="color: #ff0084;"></i> Flickr</div>
+                <div class="social-metrics">
+                    <div class="metric"><span>Visualizações</span><strong>820.016</strong></div>
+                </div>
+            </div>
+
+            <div class="social-card" style="border-top-color: #FF0000;">
+                <div class="social-header"><i class="fa-brands fa-youtube" style="color: #FF0000;"></i> YouTube</div>
+                <div class="social-metrics">
+                    <div class="metric"><span>Visualizações</span><strong>95.272</strong></div>
+                    <div class="metric"><span>Impressões de post.</span><strong>268.056</strong></div>
+                    <div class="metric"><span>Inscritos no canal</span><strong>82.861</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="social-section-title">Comparativo de Desempenho</h3>
+        <div class="comp-grid">
+            <div class="card">
+                <h3 style="text-align: center; color: var(--dark); margin-bottom: 1.5rem; font-size:1.1rem;">
+                    <i class="fas fa-file-alt" style="color: var(--comp-blue); margin-right: 8px;"></i>Matérias publicadas
+                </h3>
+                <div class="chart-wrapper" style="height: 200px;"><canvas id="gCompMat"></canvas></div>
+                <div class="variations-wrapper">
+                    
+                <div class="var-badge neg">
+                    <span class="var-value"><i class="fas fa-arrow-down"></i> 25,0%</span>
+                    <span class="var-label">vs média 12 meses</span>
+                </div>
+            
+                    
+                <div class="var-badge neg">
+                    <span class="var-value"><i class="fas fa-arrow-down"></i> 49,2%</span>
+                    <span class="var-label">vs mesmo mês ano anterior</span>
+                </div>
+            
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="text-align: center; color: var(--dark); margin-bottom: 1.5rem; font-size:1.1rem;">
+                    <i class="fas fa-users" style="color: var(--comp-red); margin-right: 8px;"></i>Usuários do Portal
+                </h3>
+                <div class="chart-wrapper" style="height: 200px;"><canvas id="gCompUsr"></canvas></div>
+                <div class="variations-wrapper">
+                    
+                <div class="var-badge pos">
+                    <span class="var-value"><i class="fas fa-arrow-up"></i> 185,9%</span>
+                    <span class="var-label">vs média 12 meses</span>
+                </div>
+            
+                    
+                <div class="var-badge pos">
+                    <span class="var-value"><i class="fas fa-arrow-up"></i> 160,0%</span>
+                    <span class="var-label">vs mesmo mês ano anterior</span>
+                </div>
+            
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="text-align: center; color: var(--dark); margin-bottom: 1.5rem; font-size:1.1rem;">
+                    <i class="fas fa-eye" style="color: var(--comp-green); margin-right: 8px;"></i>Visualizações de página
+                </h3>
+                <div class="chart-wrapper" style="height: 200px;"><canvas id="gCompVw"></canvas></div>
+                <div class="variations-wrapper">
+                    
+                <div class="var-badge pos">
+                    <span class="var-value"><i class="fas fa-arrow-up"></i> 168,3%</span>
+                    <span class="var-label">vs média 12 meses</span>
+                </div>
+            
+                    
+                <div class="var-badge pos">
+                    <span class="var-value"><i class="fas fa-arrow-up"></i> 146,4%</span>
+                    <span class="var-label">vs mesmo mês ano anterior</span>
+                </div>
+            
+                </div>
+            </div>
+        </div>
+
+        <h3 class="social-section-title">Visualizações de página por ano</h3>
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="chart-wrapper" style="height: 300px;"><canvas id="graficoAnos"></canvas></div>
+        </div>
+
+        <h3 class="social-section-title">Visualizações de página (Últimos 12 meses)</h3>
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="chart-wrapper" style="height: 400px;"><canvas id="graficoMeses12"></canvas></div>
+        </div>
+
+        <h3 class="social-section-title">Desempenho por Formato</h3>
+        <div class="charts-grid" style="margin-bottom: 2rem;">
+            <div class="card">
+                <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">Itens publicados no portal, por formato</h3>
+                <div class="chart-wrapper" style="height: 350px;"><canvas id="graficoHistFormatos"></canvas></div>
+            </div>
+            <div class="card">
+                <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">Visualizações de página, por formato</h3>
+                <div class="chart-wrapper" style="height: 350px;"><canvas id="graficoVisFormatos"></canvas></div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO ENGAJAMENTO COM TEXTO EXPLICATIVO INSERIDO -->
+        <h3 class="social-section-title">Métricas de Engajamento</h3>
+        
+        
+        <div style="background-color: #f8f9fa; border-left: 4px solid var(--primary); padding: 1.5rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--dark);">
+            <strong style="color: var(--primary);"><i class="fas fa-info-circle" style="margin-right: 5px;"></i> O que é Taxa de Engajamento?</strong><br>
+            <p style="margin-top: 8px; line-height: 1.5; color: var(--gray);">A taxa de engajamento reflete a proporção de usuários que interagiram ativamente com o conteúdo do portal ou permaneceram lendo a página.</p>
+        </div>
+        
+
+        <div class="charts-grid" style="margin-bottom: 1.5rem;">
+            <div class="card">
+                <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;">Taxa de engajamento</h3>
+                <div class="chart-wrapper"><canvas id="graficoEngTaxa"></canvas></div>
+            </div>
+            <div class="card">
+                <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;">Duração média da sessão</h3>
+                <div class="chart-wrapper"><canvas id="graficoEngSessao"></canvas></div>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;">Engajamento médio, geral e por cidade*</h3>
+            <div class="chart-wrapper" style="height: 300px;"><canvas id="graficoEngCidades"></canvas></div>
+        </div>
+
+        <h3 class="social-section-title">Destaques de Conteúdo</h3>
+        
+        <div class="card" style="margin-bottom: 2rem; padding: 0; overflow: hidden;">
+            <h4 style="color: var(--primary); margin: 1.5rem 1.5rem 1rem 1.5rem; font-size: 1.1rem;"><i class="fas fa-search" style="margin-right: 8px;"></i>10 Termos mais pesquisados no Google</h4>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width: 40px; text-align: center;">#</th><th>termo pesquisado</th><th class="text-right">cliques no portal</th></tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">1.</td>
+                                <td>candidatos a senadores por são paulo</td>
+                                <td class="text-right" style="font-weight: 500;">53.643</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">2.</td>
+                                <td> candidatos senadores sp 2026 </td>
+                                <td class="text-right" style="font-weight: 500;">34.671</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">3.</td>
+                                <td>senadores do estado de são paulo 2026 </td>
+                                <td class="text-right" style="font-weight: 500;">29.190</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">4.</td>
+                                <td> lista de candidatos a senadores 2026</td>
+                                <td class="text-right" style="font-weight: 500;"> 25.267 </td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">5.</td>
+                                <td>em quantos candidatos temos que votar em 2026</td>
+                                <td class="text-right" style="font-weight: 500;"> 18.033</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">6.</td>
+                                <td>candidatos ao senado por são paulo </td>
+                                <td class="text-right" style="font-weight: 500;">16.405 </td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">7.</td>
+                                <td>candidatos a senador sp 2026 </td>
+                                <td class="text-right" style="font-weight: 500;">15.439</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">8.</td>
+                                <td> eleições 2026 </td>
+                                <td class="text-right" style="font-weight: 500;">14.236</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">9.</td>
+                                <td>candidatos a senadores por minas gerais </td>
+                                <td class="text-right" style="font-weight: 500;">13.817 </td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">10.</td>
+                                <td>senador candidatos 2026 </td>
+                                <td class="text-right" style="font-weight: 500;">13.161</td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem; padding: 0; overflow: hidden;">
+            <h4 style="color: var(--primary); margin: 1.5rem 1.5rem 1rem 1.5rem; font-size: 1.1rem;"><i class="fas fa-copy" style="margin-right: 8px;"></i>10 Matérias mais copiadas (Ctrl+C)</h4>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th style="width: 40px; text-align: center;">#</th><th style="width: 140px">Data</th><th>Matéria/Item publicado</th><th class="text-right">Cópias</th></tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">1.</td>
+                                <td style="white-space: nowrap;">16 de set. de 2026</td>
+                                <td>Eleições 2026: saiba a ordem dos votos na urna eletrônica </td>
+                                <td class="text-right" style="font-weight: 500;">1.282</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">2.</td>
+                                <td style="white-space: nowrap;">2 de set. de 2026</td>
+                                <td>Fim da escala 6x1 passa na CCJ e vai a Plenário</td>
+                                <td class="text-right" style="font-weight: 500;">1.484</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">3.</td>
+                                <td style="white-space: nowrap;">24 de out. de 2025</td>
+                                <td> DataSenado: violência de gênero atinge 3,7 milhões de brasileiras</td>
+                                <td class="text-right" style="font-weight: 500;">731</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">4.</td>
+                                <td style="white-space: nowrap;">18 de set. de 2026</td>
+                                <td>Lei proíbe prisão de candidatos e eleitores durante período de votação</td>
+                                <td class="text-right" style="font-weight: 500;">692</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">5.</td>
+                                <td style="white-space: nowrap;">14 de jul. de 2026</td>
+                                <td>Eleitor escolherá dois senadores neste ano; veja como votar</td>
+                                <td class="text-right" style="font-weight: 500;">652</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">6.</td>
+                                <td style="white-space: nowrap;">1 de set. de 2026</td>
+                                <td>Incentivo para instalação de data centers no Brasil é aprovado pelo Senado</td>
+                                <td class="text-right" style="font-weight: 500;">648</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">7.</td>
+                                <td style="white-space: nowrap;">24 de ago. de 2026</td>
+                                <td>Candidatos 2026, São Paulo</td>
+                                <td class="text-right" style="font-weight: 500;">643</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">8.</td>
+                                <td style="white-space: nowrap;">28 de set. de 2026</td>
+                                <td> MP proíbe bets e determina encerramento das operações em 30 dias </td>
+                                <td class="text-right" style="font-weight: 500;">531</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">9.</td>
+                                <td style="white-space: nowrap;">2 de set. de 2026</td>
+                                <td>Senado aprova política nacional para minerais críticos e estratégicos</td>
+                                <td class="text-right" style="font-weight: 500;">519</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="text-align: center; color: var(--gray);">10.</td>
+                                <td style="white-space: nowrap;">10 de set. de 2026</td>
+                                <td>Eleições 2026: quem fica, quem sai e quem concorre ao Senado</td>
+                                <td class="text-right" style="font-weight: 500;">354</td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="credits-section" style="background-image: url('${dados.credFoto}');">
+        <div class="credits-overlay"></div>
+        <div class="credits-content">
+            <h2 class="credits-title">Créditos</h2>
+            <div class="credits-line"></div>
+            <div class="credits-text">
+                Direção da Agência Senado: Paola Lima<br>Coordenação geral: Silvio Burle<br>Produção e edição do relatório: Sarah Nunez<br>Arte: Diego Jimenez<br>
+            </div>
+            <div class="credits-text credits-fontes">
+                Fontes: Google Analytics, Datastudio Agência Senado, portal Senado Notícias, Coordenação de Fotografia, Serviço de Publicações Especiais.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const coverHeight = document.querySelector('.cover-page').offsetHeight;
+            const stickyHeader = document.getElementById('sticky-header');
+            if (window.scrollY > coverHeight - 70) {
+                stickyHeader.classList.add('visible');
+            } else {
+                stickyHeader.classList.remove('visible');
+            }
+        });
+
+        const dadosGraficos = {"capaTitulo":"Relatório mensal - Setembro","capaSubtitulo":"Ano 6 - Edição 50","capaFoto":"https://farm66.staticflickr.com/65535/55128488962_ab681ef21d_z.jpg","capaLogo":"https://live.staticflickr.com/65535/55263689148_8cc5854e3a_m.jpg","destaques":"Em setembro, a Agência Senado obteve 5,1 milhões de visualizações, com 3,4 milhões de usuários, um dos recordes mensais do portal Senado Notícias. O alcance se deve às matérias de serviço sobre eleições, especialmente às listas de candidatos ao Senado e às instruções sobre o processo de votação. \n\nNo período que antecedeu o primeiro turno das eleições, o acesso ao portal chegou em média a meio milhão por dia. Em setembro, foram 100 milhões de ofertas do nosso conteúdo no Google e 90% dos nossos usuários vieram do buscador. \n\nOs indicadores de visualizações e usuários subiram entre 150% e 185% nas comparações com setembro de 2025 e com a média dos 12 meses anteriores.  \n\nO alcance do portal Senado Notícias nestas eleições superou o da eleição de 2022. Somente a matéria dos candidatos ao Senado por São Paulo em 2026 teve 1,9 milhão de acessos, quase 60% a mais que em 2022. Naquelas eleições, o conteúdo de mesma natureza teve 1,2 milhão de visualizações. \n\nNa plataforma Instagram, outro recorde em setembro: 2,5 milhões de visualizações, impulsionadas pelas colaborações com os perfis @senadofederal, @tvsenado e @radiosenado. A métrica foi obtida pela soma das visualizações de todos os posts da Agência no mês. Já o número informado pelo Instagram foi de 1,96 milhão.  \n\nCerca de 2,2 milhões de visualizações vieram das mais de 30 postagens colaborativas sobre os candidatos ao Senado em cada estado. O post exclusivo mais visto foi o da aprovação do piso salarial de médicos e dentistas na CAS. Foram 84 mil visualizações, 52 mil contas alcançadas, 3,3 mil curtidas, 231 comentários e 1,2 mil compartilhamentos. \n\nNo Flickr, as fotografias da Agência foram visualizadas 920 mil vezes em setembro. O pico ocorreu no dia 1º, quando houve esforço concentrado e muito movimento no Senado: aprovação de benefícios para motoristas de app e taxistas, debates sobre o fim da escala 6 x 1, e pedido de impeachment do ministro Alexandre de Moraes. \n\n","views":"5.188.350","usuarios":"3.380.822","materias":"0","matTexto":232,"matAudio":149,"matVideo":71,"matInfo":44,"matMicro":0,"mobile":77.7,"desktop":22.3,"busca":90.4,"news":0.9,"direto":7.2,"outros":1.5,"fotoProd":" 25.521","fotoCat":"4.279","fotoFlickr":"2.043","postIg":"320","pubYt":"17","igViews":"1.959.709","igFollowers":"58.658","flViews":"820.016","ytViews":"95.272","ytImpressions":"268.056","ytSubs":"82.861","compLbls":["média¹","2025(setembro)","2026(setembro)"],"cMat":[661,977,496],"cUsr":[1182549,1300371,3380822],"cVw":[1933711,2105331,5188350],"lblsAnos":["0","0","0","0","0"],"valsAnos":[0,0,0,0,0],"lblsMeses12":["Out/25","Nov/25","Dez/25","Jan/26","Fev/26","Mar/26","Abr/26","Mai/26","Jun/26","Jul/26","Ago/26","Set/26"],"valsMeses12":[2034824,2314854,2552827,1415977,1589521,2077605,1822332,1748114,1549295,1411638,2582215,5188350],"lblsHistForm":["Abr/26","Mai/26","Jun/26","Jul/26","Ago/26","Set/26"],"txtHistForm":[351,428,369,302,225,232],"audHistForm":[157,209,178,156,142,149],"vidHistForm":[119,152,98,70,70,71],"infoHistForm":[17,11,13,14,46,44],"lblsVisForm":["Abr/26","Mai/26","Jun/26","Jul/26","Ago/26","Set/26"],"txtVisForm":[1209524,1233614,1070345,1004685,1322346,2402021],"audVisForm":[56327,56459,37482,36320,46141,49851],"vidVisForm":[117295,104747,89027,101312,100910,205038],"infoVisForm":[135462,116184,100260,69406,1112818,2531440],"engTxExpl":"A taxa de engajamento reflete a proporção de usuários que interagiram ativamente com o conteúdo do portal ou permaneceram lendo a página.","lblsEngTaxa":["Mai/26","Jun/26","Jul/26","Ago/26","Set/26"],"valsEngTaxa":[40.83,41.79,41.29,51.2,54.95],"lblsEngSes":["desktop","smart tv","tablet","celular"],"strsEngSes":["01:36","01:21","01:07","00:49"],"valsEngSes":[96,81,67,49],"lblsEngCid":["Brasília","São Paulo","Campinas","Campo Grande","São Luis","Média"],"strsEngCid":["00:01:07","00:01:00","00:01:00","00:00:57","00:00:57","00:00:59"],"valsEngCid":[67,60,60,57,57,59],"topPesquisas":[{"termo":"candidatos a senadores por são paulo","cliques":"53.643"},{"termo":" candidatos senadores sp 2026 ","cliques":"34.671"},{"termo":"senadores do estado de são paulo 2026 ","cliques":"29.190"},{"termo":" lista de candidatos a senadores 2026","cliques":" 25.267 "},{"termo":"em quantos candidatos temos que votar em 2026","cliques":" 18.033"},{"termo":"candidatos ao senado por são paulo ","cliques":"16.405 "},{"termo":"candidatos a senador sp 2026 ","cliques":"15.439"},{"termo":" eleições 2026 ","cliques":"14.236"},{"termo":"candidatos a senadores por minas gerais ","cliques":"13.817 "},{"termo":"senador candidatos 2026 ","cliques":"13.161"}],"topCopias":[{"data":"16 de set. de 2026","materia":"Eleições 2026: saiba a ordem dos votos na urna eletrônica ","copias":"1.282"},{"data":"2 de set. de 2026","materia":"Fim da escala 6x1 passa na CCJ e vai a Plenário","copias":"1.484"},{"data":"24 de out. de 2025","materia":" DataSenado: violência de gênero atinge 3,7 milhões de brasileiras","copias":"731"},{"data":"18 de set. de 2026","materia":"Lei proíbe prisão de candidatos e eleitores durante período de votação","copias":"692"},{"data":"14 de jul. de 2026","materia":"Eleitor escolherá dois senadores neste ano; veja como votar","copias":"652"},{"data":"1 de set. de 2026","materia":"Incentivo para instalação de data centers no Brasil é aprovado pelo Senado","copias":"648"},{"data":"24 de ago. de 2026","materia":"Candidatos 2026, São Paulo","copias":"643"},{"data":"28 de set. de 2026","materia":" MP proíbe bets e determina encerramento das operações em 30 dias ","copias":"531"},{"data":"2 de set. de 2026","materia":"Senado aprova política nacional para minerais críticos e estratégicos","copias":"519"},{"data":"10 de set. de 2026","materia":"Eleições 2026: quem fica, quem sai e quem concorre ao Senado","copias":"354"}],"credFoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Congresso_Nacional_do_Brasil_ao_anoitecer.jpg/1200px-Congresso_Nacional_do_Brasil_ao_anoitecer.jpg","credTexto":"Direção da Agência Senado: Paola Lima\nCoordenação geral: Silvio Burle\nProdução e edição do relatório: Sarah Nunez\nArte: Diego Jimenez\n","credFontes":"Fontes: Google Analytics, Datastudio Agência Senado, portal Senado Notícias, Coordenação de Fotografia, Serviço de Publicações Especiais."};
+        
+        const gradienteAnos = ['#9aaeb7', '#849da9', '#6e8c9b', '#587c8c', '#436b7e'];
+        const gradienteMeses12 = ['#b5c6cd', '#abbec6', '#a0b5bf', '#96adb7', '#8ba5b0', '#819da9', '#7794a2', '#6c8c9b', '#628493', '#587c8c', '#4d7385', '#436b7e'];
+        
+        Chart.register(ChartDataLabels);
+
+        const getColorsByValue = (dataArray, palette) => {
+            const maxVal = Math.max(...dataArray);
+            if (maxVal === 0) return dataArray.map(() => palette[0]);
+
+            return dataArray.map(val => {
+                const ratio = val / maxVal;
+                let index = Math.floor(ratio * palette.length);
+                if (index >= palette.length) index = palette.length - 1;
+                return palette[index];
+            });
+        };
+
+        const compFormatter = (value) => {
+            if (value >= 1000000) return (value / 1000000).toFixed(1).replace('.', ',') + ' mi';
+            return value.toString().replace('.', ',');
+        };
+
+        const createMixedChart = (ctxId, valMedia, valAnt, valAtual, lblMedia, lblAnt, lblAtual, barColor) => {
+            const maxVal = Math.max(valMedia, valAnt, valAtual);
+            
+            const averageLinePlugin = {
+                id: 'averageLine',
+                afterDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const yAxis = chart.scales.y;
+                    const meta = chart.getDatasetMeta(0);
+                    
+                    if (!meta || !meta.data || meta.data.length === 0) return;
+                    
+                    const y = yAxis.getPixelForValue(valMedia);
+                    
+                    const barWidth = meta.data[0].width || 40;
+                    const xFirst = meta.data[0].x;
+                    const xLast = meta.data[meta.data.length - 1].x;
+                    
+                    const left = xFirst - barWidth/2 - 25; 
+                    const right = xLast + barWidth/2 + 25; 
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.moveTo(left, y);
+                    ctx.lineTo(right, y);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#9aa0a6';
+                    ctx.stroke();
+
+                    ctx.font = '600 12px sans-serif';
+                    const text = 'média';
+                    const textWidth = ctx.measureText(text).width;
+                    const x = (left + right) / 2;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(x - textWidth/2 - 6, y - 10, textWidth + 12, 20);
+                    
+                    ctx.fillStyle = '#7b8084';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, x, y);
+
+                    ctx.restore();
+                }
+            };
+
+            new Chart(document.getElementById(ctxId).getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: [lblAnt, lblAtual],
+                    datasets: [
+                        {
+                            data: [valAnt, valAtual],
+                            backgroundColor: barColor, 
+                            borderRadius: 4,
+                            barPercentage: 0.6,
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                color: barColor, 
+                                font: { weight: 'bold', size: 14 },
+                                formatter: compFormatter
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    layout: { padding: { top: 35 } }, 
+                    plugins: { tooltip: { enabled: false }, legend: { display: false } }, 
+                    scales: { 
+                        y: { display: false, beginAtZero: true, suggestedMax: maxVal * 1.15 }, 
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', color: '#5f6368' } } } 
+                    } 
+                },
+                plugins: [averageLinePlugin]
+            });
+        };
+
+        createMixedChart('gCompMat', dadosGraficos.cMat[0], dadosGraficos.cMat[1], dadosGraficos.cMat[2], dadosGraficos.compLbls[0], dadosGraficos.compLbls[1], dadosGraficos.compLbls[2], '#264653');
+        createMixedChart('gCompUsr', dadosGraficos.cUsr[0], dadosGraficos.cUsr[1], dadosGraficos.cUsr[2], dadosGraficos.compLbls[0], dadosGraficos.compLbls[1], dadosGraficos.compLbls[2], '#E76F51');
+        createMixedChart('gCompVw', dadosGraficos.cVw[0], dadosGraficos.cVw[1], dadosGraficos.cVw[2], dadosGraficos.compLbls[0], dadosGraficos.compLbls[1], dadosGraficos.compLbls[2], '#2A9D8F');
+
+        new Chart(document.getElementById('graficoOrigem').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: ['Busca', 'Google Notícias', 'Direto', 'Outros'],
+                datasets: [{ data: [dadosGraficos.busca, dadosGraficos.news, dadosGraficos.direto, dadosGraficos.outros], backgroundColor: ['#264653', '#2A9D8F', '#F4A261', '#E76F51'], borderWidth: 2, borderColor: '#fff' }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: window.innerWidth < 768 ? 10 : 20 },
+                plugins: { tooltip: { enabled: false }, legend: { position: window.innerWidth < 768 ? 'bottom' : 'right' }, datalabels: { color: '#fff', font: { weight: 'bold', size: 14 }, formatter: (value) => value.toString().replace('.', ',') + '%' } }
+            }
+        });
+
+        new Chart(document.getElementById('graficoDispositivos').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: ['Mobile', 'Desktop'],
+                datasets: [{ data: [dadosGraficos.mobile, dadosGraficos.desktop], backgroundColor: ['#2a9d8f', '#264653'], borderWidth: 2, borderColor: '#fff' }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: window.innerWidth < 768 ? 10 : 20 },
+                plugins: { tooltip: { enabled: false }, legend: { position: window.innerWidth < 768 ? 'bottom' : 'right' }, datalabels: { color: '#fff', font: { weight: 'bold', size: 14 }, formatter: (value) => value.toString().replace('.', ',') + '%' } }
+            }
+        });
+
+        new Chart(document.getElementById('graficoAnos').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: dadosGraficos.lblsAnos,
+                datasets: [{ data: dadosGraficos.valsAnos, backgroundColor: getColorsByValue(dadosGraficos.valsAnos, gradienteAnos), borderRadius: 4 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: { top: 30 } },
+                plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { anchor: 'end', align: 'top', color: '#5f6368', font: { weight: 'bold', size: 12 }, formatter: compFormatter } },
+                scales: { 
+                    y: { beginAtZero: true, ticks: { callback: compFormatter } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoMeses12').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: dadosGraficos.lblsMeses12,
+                datasets: [{ data: dadosGraficos.valsMeses12, backgroundColor: getColorsByValue(dadosGraficos.valsMeses12, gradienteMeses12), borderRadius: 4 }]
+            },
+            options: {
+                indexAxis: 'y', 
+                responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } },
+                plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#5f6368', font: { weight: 'bold', size: 12 }, formatter: compFormatter } },
+                scales: { 
+                    x: { beginAtZero: true, ticks: { callback: compFormatter } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoHistFormatos').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: dadosGraficos.lblsHistForm,
+                datasets: [
+                    {
+                        label: 'áudio',
+                        data: dadosGraficos.audHistForm,
+                        borderColor: '#2196F3',
+                        backgroundColor: '#2196F3',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { color: '#2196F3', align: 'top', font: { weight: 'bold' } }
+                    },
+                    {
+                        label: 'texto',
+                        data: dadosGraficos.txtHistForm,
+                        borderColor: '#4CAF50',
+                        backgroundColor: '#4CAF50',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { color: '#4CAF50', align: 'top', font: { weight: 'bold' } }
+                    },
+                    {
+                        label: 'infomatéria',
+                        data: dadosGraficos.infoHistForm,
+                        borderColor: '#E91E63',
+                        backgroundColor: '#E91E63',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { color: '#E91E63', align: 'top', font: { weight: 'bold' } }
+                    },
+                    {
+                        label: 'vídeo',
+                        data: dadosGraficos.vidHistForm,
+                        borderColor: '#FF9800',
+                        backgroundColor: '#FF9800',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { color: '#FF9800', align: 'top', font: { weight: 'bold' } }
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 30, right: 20, left: 20, bottom: 10 } },
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: true, position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { weight: 'bold' } } }
+                },
+                scales: {
+                    y: { beginAtZero: true },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoVisFormatos').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: dadosGraficos.lblsVisForm,
+                datasets: [
+                    {
+                        label: 'Texto',
+                        data: dadosGraficos.txtVisForm,
+                        borderColor: '#4CAF50',
+                        backgroundColor: '#4CAF50',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { color: '#4CAF50', align: 'top', font: { weight: 'bold' }, formatter: compFormatter }
+                    },
+                    {
+                        label: 'Áudio',
+                        data: dadosGraficos.audVisForm,
+                        borderColor: '#2196F3',
+                        backgroundColor: '#2196F3',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { display: false }
+                    },
+                    {
+                        label: 'Vídeo',
+                        data: dadosGraficos.vidVisForm,
+                        borderColor: '#FF9800',
+                        backgroundColor: '#FF9800',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { display: false }
+                    },
+                    {
+                        label: 'Infomatéria',
+                        data: dadosGraficos.infoVisForm,
+                        borderColor: '#E91E63',
+                        backgroundColor: '#E91E63',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        datalabels: { display: false }
+                    }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 30, right: 30, left: 30, bottom: 10 } },
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: true, position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { weight: 'bold' } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: compFormatter } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoEngTaxa').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: dadosGraficos.lblsEngTaxa,
+                datasets: [{ data: dadosGraficos.valsEngTaxa, backgroundColor: '#3A697C', borderRadius: 4 }] 
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15 } },
+                plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { anchor: 'end', align: 'bottom', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: v => v.toString().replace('.', ',') + '%' } },
+                scales: { 
+                    y: { beginAtZero: true, ticks: { callback: v => v + '%' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoEngSessao').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: dadosGraficos.lblsEngSes,
+                datasets: [{ data: dadosGraficos.valsEngSes, backgroundColor: '#2A9D8F', borderRadius: 4 }] 
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15 } },
+                plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { anchor: 'end', align: 'bottom', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (v, ctx) => dadosGraficos.strsEngSes[ctx.dataIndex] } },
+                scales: { 
+                    y: { display: false, beginAtZero: true },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('graficoEngCidades').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: dadosGraficos.lblsEngCid,
+                datasets: [{ data: dadosGraficos.valsEngCid, backgroundColor: '#264653', borderRadius: 4 }] 
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15 } },
+                plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { anchor: 'end', align: 'bottom', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (v, ctx) => dadosGraficos.strsEngCid[ctx.dataIndex] } },
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            callback: v => {
+                                if (v >= 60) {
+                                    const m = Math.floor(v / 60);
+                                    const s = v % 60;
+                                    return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+                                }
+                                return v;
+                            }
+                        }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // REGRA INTELIGENTE GLOBAL: Ocultar valores zerados e seções vazias
+        setTimeout(() => {
+            const isZero = (val) => {
+                if(!val) return true;
+                const text = val.toString().trim();
+                // Trata vazios e traços
+                if (text === '' || text === '-') return true;
+                
+                // Converte "00:00", "0%", "0,0" para formato numérico base e avalia se é zero
+                const v = text.replace(/[^0-9,-]/g, '').replace(',', '.');
+                return v !== '' && Number(v) === 0;
+            };
+
+            // 1. Ocultar KPIs zerados
+            document.querySelectorAll('.kpi-card-small').forEach(el => {
+                const valDiv = el.querySelector('.valor');
+                if (valDiv && isZero(valDiv.textContent)) el.style.display = 'none';
+            });
+
+            // 2. Ocultar Métricas Sociais zeradas
+            document.querySelectorAll('.metric').forEach(el => {
+                const valDiv = el.querySelector('strong');
+                if (valDiv && isZero(valDiv.textContent)) el.style.display = 'none';
+            });
+
+            // 3. Ocultar Linhas de Tabelas zeradas
+            document.querySelectorAll('table tbody tr').forEach(el => {
+                const valTd = el.querySelector('td:last-child');
+                if (valTd && isZero(valTd.textContent)) el.style.display = 'none';
+            });
+
+            // 4. Checar Gráficos zerados
+            Object.values(Chart.instances).forEach(chart => {
+                let allZero = true;
+                chart.data.datasets.forEach(ds => {
+                    if (ds.data && ds.data.length > 0) {
+                        // Verifica se existe algum valor válido acima de zero
+                        if (!ds.data.every(d => Number(d) === 0 || d === null || d === undefined || d === '')) {
+                            allZero = false;
+                        }
+                    }
+                });
+                if (allZero && chart.canvas) {
+                    const card = chart.canvas.closest('.card');
+                    if (card) card.style.display = 'none';
+                }
+            });
+
+            // 5. Ocultar containers se todos os itens internos estiverem ocultos
+            const hideEmptyContainer = (selector, itemSelector) => {
+                document.querySelectorAll(selector).forEach(container => {
+                    const items = Array.from(container.querySelectorAll(itemSelector));
+                    if (items.length > 0 && items.every(item => window.getComputedStyle(item).display === 'none')) {
+                        container.style.display = 'none';
+                    }
+                });
+            };
+
+            hideEmptyContainer('.social-card', '.metric'); 
+            hideEmptyContainer('.kpi-grid-5', '.kpi-card-small');
+            hideEmptyContainer('.kpi-grid-2', '.kpi-card-small');
+            hideEmptyContainer('.social-grid', '.social-card');
+            hideEmptyContainer('.comp-grid', '.card');
+            hideEmptyContainer('.charts-grid', '.card');
+            
+            // Ocultar Card de Tabela se todas as linhas foram apagadas
+            document.querySelectorAll('.data-table').forEach(table => {
+                const rows = Array.from(table.querySelectorAll('tbody tr'));
+                if (rows.length > 0 && rows.every(tr => window.getComputedStyle(tr).display === 'none')) {
+                    const card = table.closest('.card');
+                    if (card) card.style.display = 'none';
+                }
+            });
+            
+            // 6. Varredura para Títulos Órfãos
+            document.querySelectorAll('.social-section-title').forEach(title => {
+                let nextEl = title.nextElementSibling;
+                let hasVisibleContent = false;
+                
+                // Varre os elementos a frente até encontrar o próximo título ou o fim das seções
+                while(nextEl && !nextEl.classList.contains('social-section-title') && nextEl.tagName !== 'H3' && !nextEl.classList.contains('credits-section')) {
+                    if (window.getComputedStyle(nextEl).display !== 'none') {
+                        // Considera conteúdo visível se tiver texto OU contiver um gráfico (canvas)
+                        if (nextEl.textContent.trim() !== '' || nextEl.querySelector('canvas')) {
+                            hasVisibleContent = true;
+                            break;
+                        }
+                    }
+                    nextEl = nextEl.nextElementSibling;
+                }
+                
+                if (!hasVisibleContent) {
+                    title.style.display = 'none';
+                }
+            });
+        }, 500); // 500ms de margem garante a verificação após a animação de montagem dos charts
+    </script>
+</body>
+</html>
